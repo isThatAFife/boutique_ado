@@ -4,12 +4,12 @@ from django.shortcuts import get_object_or_404
 from products.models import Product
 
 def bag_contents(request):
-    
+
     bag_items = []
     total = 0
     product_count = 0
     bag = request.session.get('bag', {})
-    
+
     for item_id, item_data in bag.items():
         if isinstance(item_data, int):
             product = get_object_or_404(Product, pk=item_id)
@@ -21,6 +21,7 @@ def bag_contents(request):
                 'product': product,
             })
         else:
+            product = get_object_or_404(Product, pk=item_id)
             for size, quantity in item_data['items_by_size'].items():
                 total += quantity * product.price
                 product_count += quantity
@@ -30,14 +31,14 @@ def bag_contents(request):
                     'product': product,
                     'size': size,
                 })
-    
+
     if total < settings.FREE_DELIVERY_THRESHOLD:
         delivery = total * Decimal(settings.STANDARD_DELIVERY_PERCENTAGE / 100)
         free_delivery_delta = settings.FREE_DELIVERY_THRESHOLD - total
     else:
         delivery = 0
         free_delivery_delta = 0
-        
+    
     grand_total = delivery + total
     
     context = {
@@ -49,5 +50,5 @@ def bag_contents(request):
         'free_delivery_threshold': settings.FREE_DELIVERY_THRESHOLD,
         'grand_total': grand_total,
     }
-    
+
     return context
