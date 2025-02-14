@@ -53,3 +53,15 @@
         </li>
     </ul>
 </div>
+
+{% block postloadjs %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementsByClassName('nav-item dropdown').forEach(function (item) {
+            item.addEventListener('hover', function () {
+                item.classList.toggle('show');
+            });
+        });
+    });
+</script>
+{% endblock postloadjs %} 
